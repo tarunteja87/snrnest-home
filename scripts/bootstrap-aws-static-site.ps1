@@ -4,6 +4,7 @@ param(
   [string]$StackName = "snrnest-static-site",
   [string]$GitHubOwner = "tarunteja87",
   [string]$GitHubRepo = "snrnest-home",
+  [string]$GitHubOidcSubject = "repo:tarunteja87@101967683/snrnest-home@1358319442:ref:refs/heads/main",
   [string]$SiteBucketName = "snrnest-com-site"
 )
 
@@ -73,6 +74,7 @@ Invoke-Aws cloudformation deploy `
     HostedZoneId=$zoneId `
     GitHubOwner=$GitHubOwner `
     GitHubRepo=$GitHubRepo `
+    GitHubOidcSubject=$GitHubOidcSubject `
     SiteBucketName=$SiteBucketName `
     ExistingGitHubOidcProviderArn=$oidcProviderArn `
     EnableCustomDomain=$enableCustomDomain | Out-Host

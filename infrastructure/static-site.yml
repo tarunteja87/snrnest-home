@@ -13,6 +13,9 @@ Parameters:
   GitHubRepo:
     Type: String
     Default: snrnest-home
+  GitHubOidcSubject:
+    Type: String
+    Default: repo:tarunteja87@101967683/snrnest-home@1358319442:ref:refs/heads/main
   SiteBucketName:
     Type: String
     Default: snrnest-com-site
@@ -201,8 +204,8 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-              StringLike:
-                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubOwner}/${GitHubRepo}:*"
+              StringEquals:
+                token.actions.githubusercontent.com:sub: !Ref GitHubOidcSubject
       Policies:
         - PolicyName: DeployStaticSite
           PolicyDocument:
