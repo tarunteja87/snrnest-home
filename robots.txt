@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # SNR NEST — sitemap
-Sitemap: https://snrnest.com/sitemap.xml
+Sitemap: https://snrnest.in/sitemap.xml

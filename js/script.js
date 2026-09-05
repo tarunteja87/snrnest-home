@@ -1691,7 +1691,7 @@
       'TEL;TYPE=WORK,VOICE:+919632341836',
       'EMAIL;TYPE=WORK,INTERNET:praveen@snrnest.in',
       'EMAIL;TYPE=HOME,INTERNET:rangapraveend4@gmail.com',
-      'URL:https://snrnest.com/',
+      'URL:https://snrnest.in/',
       'ADR;TYPE=WORK:;;;Hyderabad;Telangana;;;India',
       'NOTE:Building Opportunities. Empowering Careers.',
       'END:VCARD',

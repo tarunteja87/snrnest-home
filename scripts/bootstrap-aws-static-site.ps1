@@ -1,6 +1,6 @@
 param(
   [string]$Profile = "snrnest",
-  [string]$DomainName = "snrnest.com",
+  [string]$DomainName = "snrnest.in",
   [string]$StackName = "snrnest-static-site",
   [string]$GitHubOwner = "tarunteja87",
   [string]$GitHubRepo = "snrnest-home",

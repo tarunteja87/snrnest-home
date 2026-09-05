@@ -4,7 +4,7 @@ Description: SNR NEST static site on S3, CloudFront, ACM, Route 53, and GitHub A
 Parameters:
   DomainName:
     Type: String
-    Default: snrnest.com
+    Default: snrnest.in
   HostedZoneId:
     Type: AWS::Route53::HostedZone::Id
   GitHubOwner:

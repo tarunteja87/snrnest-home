@@ -98,7 +98,7 @@ The folder is 100% static — host it anywhere:
 | **GitHub Pages** | Push the folder to a repo → Settings → Pages → deploy from branch. |
 | **cPanel / shared hosting** | Upload the folder contents into `public_html/`. |
 
-### AWS CI/CD for `snrnest.com`
+### AWS CI/CD for `snrnest.in`
 
 This repo includes a GitHub Actions pipeline for S3 + CloudFront + Route 53 + ACM SSL:
 
@@ -116,10 +116,10 @@ invalidate CloudFront automatically.
 
 Search the files for these markers and swap in real values:
 
-1. **Domain** — `snrnest.com` configured in:
+1. **Domain** — `snrnest.in` configured in:
    - All HTML files (canonical, og:url, og:image, twitter:image, schema JSON-LD)
    - `sitemap.xml` (all `<loc>` entries)
-   - `robots.txt` (`Sitemap: https://snrnest.com/sitemap.xml`)
+   - `robots.txt` (`Sitemap: https://snrnest.in/sitemap.xml`)
 2. **Contact details** — configured values:
    - Primary Email `praveen@snrnest.in`, Alternate Email `rangapraveend4@gmail.com`
    - Phone `+91 96323 41836`
