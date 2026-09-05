@@ -10,7 +10,7 @@
    Bump VERSION below whenever site files change so every
    visitor gets the fresh copy on their next visit.
    ============================================================ */
-const VERSION = 'v34';
+const VERSION = 'v35';
 const PRECACHE = 'snrnest-pre-' + VERSION;
 const RUNTIME = 'snrnest-run-' + VERSION;
 
@@ -26,7 +26,7 @@ const PRECACHE_FILES = [
   'services/manpower-services.html',
   'services/website-development.html',
   'services/internship.html',
-  'services/training-interview-support.html',
+  'services/training-placements.html',
   'css/tailwind.css',
   'css/style.css',
   'js/script.js',

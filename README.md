@@ -54,7 +54,7 @@ SNR-NEST-PROFESSIONAL-WEBSITE/
 │   ├── manpower-services.html          ← Manpower Services (sourcing to dark store management)
 │   ├── website-development.html        ← Website Development (business/corporate/landing)
 │   ├── internship.html                 ← Internship — ALL 8 roles on ONE page + ONE form
-│   └── training-interview-support.html ← Training & Interview Support (two sections, one page)
+│   └── training-placements.html       ← Training & Interview Support (two sections, one page)
 ├── css/
 │   ├── tailwind.css      ← precompiled utilities (do not edit by hand)
 │   └── style.css         ← custom components & animations
@@ -98,14 +98,28 @@ The folder is 100% static — host it anywhere:
 | **GitHub Pages** | Push the folder to a repo → Settings → Pages → deploy from branch. |
 | **cPanel / shared hosting** | Upload the folder contents into `public_html/`. |
 
+### AWS CI/CD for `snrnest.com`
+
+This repo includes a GitHub Actions pipeline for S3 + CloudFront + Route 53 + ACM SSL:
+
+```powershell
+aws login --profile snrnest
+.\scripts\bootstrap-aws-static-site.ps1 -Profile snrnest
+```
+
+If the hosted zone is newly created, the script prints the Route 53 nameservers.
+Set those nameservers at the domain registrar, wait for DNS delegation, then run
+the script again. After the stack finishes, pushes to `main` deploy the site and
+invalidate CloudFront automatically.
+
 ## 4. After deploying — replace placeholders
 
 Search the files for these markers and swap in real values:
 
-1. **Domain** — `www.snrnest.in` configured in:
+1. **Domain** — `snrnest.com` configured in:
    - All HTML files (canonical, og:url, og:image, twitter:image, schema JSON-LD)
    - `sitemap.xml` (all `<loc>` entries)
-   - `robots.txt` (`Sitemap: https://www.snrnest.in/sitemap.xml`)
+   - `robots.txt` (`Sitemap: https://snrnest.com/sitemap.xml`)
 2. **Contact details** — configured values:
    - Primary Email `praveen@snrnest.in`, Alternate Email `rangapraveend4@gmail.com`
    - Phone `+91 96323 41836`

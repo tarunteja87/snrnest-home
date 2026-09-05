@@ -1,0 +1,96 @@
+name: Deploy static site
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: snrnest-static-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      SOURCE_DIR: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Read deployment outputs
+        id: stack
+        if: ${{ vars.AWS_STACK_NAME != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUCKET="$(aws cloudformation describe-stacks \
+            --stack-name "${{ vars.AWS_STACK_NAME }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='SiteBucketName'].OutputValue | [0]" \
+            --output text)"
+          DISTRIBUTION_ID="$(aws cloudformation describe-stacks \
+            --stack-name "${{ vars.AWS_STACK_NAME }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='CloudFrontDistributionId'].OutputValue | [0]" \
+            --output text)"
+          echo "bucket=${BUCKET}" >> "$GITHUB_OUTPUT"
+          echo "distribution_id=${DISTRIBUTION_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Select S3 bucket
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ steps.stack.outputs.bucket }}" ]; then
+            echo "bucket=${{ steps.stack.outputs.bucket }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "bucket=${{ vars.S3_BUCKET_NAME }}" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "${{ steps.stack.outputs.distribution_id }}" ]; then
+            echo "distribution_id=${{ steps.stack.outputs.distribution_id }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "distribution_id=${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload static files
+        run: |
+          aws s3 sync "$SOURCE_DIR" "s3://${{ steps.target.outputs.bucket }}/" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "infrastructure/*" \
+            --exclude "scripts/*" \
+            --exclude "README.md"
+
+      - name: Set cache headers for HTML and service worker
+        run: |
+          aws s3 cp "s3://${{ steps.target.outputs.bucket }}/" "s3://${{ steps.target.outputs.bucket }}/" \
+            --recursive \
+            --exclude "*" \
+            --include "*.html" \
+            --include "sw.js" \
+            --metadata-directive REPLACE \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "text/html"
+          aws s3 cp "s3://${{ steps.target.outputs.bucket }}/sw.js" "s3://${{ steps.target.outputs.bucket }}/sw.js" \
+            --metadata-directive REPLACE \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --content-type "application/javascript"
+
+      - name: Invalidate CloudFront
+        if: ${{ steps.target.outputs.distribution_id != '' }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.target.outputs.distribution_id }}" \
+            --paths "/*"
