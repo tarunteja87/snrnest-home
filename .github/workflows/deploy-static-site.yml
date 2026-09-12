@@ -88,9 +88,20 @@ jobs:
             --cache-control "no-cache, no-store, must-revalidate" \
             --content-type "application/javascript"
 
+      - name: Configure CloudFront credentials
+        if: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID != '' && vars.CLOUDFRONT_INVALIDATION_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v6.2.4
+        with:
+          role-to-assume: ${{ vars.CLOUDFRONT_INVALIDATION_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Invalidate CloudFront
-        if: ${{ steps.target.outputs.distribution_id != '' }}
+        if: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID != '' || steps.target.outputs.distribution_id != '' }}
         run: |
+          DISTRIBUTION_ID="${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
+          if [ -z "$DISTRIBUTION_ID" ]; then
+            DISTRIBUTION_ID="${{ steps.target.outputs.distribution_id }}"
+          fi
           aws cloudfront create-invalidation \
-            --distribution-id "${{ steps.target.outputs.distribution_id }}" \
+            --distribution-id "$DISTRIBUTION_ID" \
             --paths "/*"
